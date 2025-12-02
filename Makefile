@@ -115,7 +115,7 @@ init: ## Initialize infrastructure for first time setup
 	@echo "✓ Services started"
 	@echo ""
 	@echo "Infrastructure is ready!"
-	@echo "  - PostgreSQL: localhost:5432"
+	@echo "  - PostgreSQL: localhost:5433"
 	@echo "  - MinIO API:  localhost:9000"
 	@echo "  - MinIO UI:   localhost:9001"
 	@echo "  - Redis:      localhost:6379"
