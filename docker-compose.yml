@@ -36,8 +36,8 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
     ports:
-      - "${MINIO_API_PORT:-9000}:9000"
-      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+      - "${MINIO_API_PORT:-9002}:9000"
+      - "${MINIO_CONSOLE_PORT:-9003}:9001"
     volumes:
       - minio_data:/data
     healthcheck:
@@ -72,7 +72,7 @@ services:
     restart: unless-stopped
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "${REDIS_PORT:-6380}:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -104,6 +104,14 @@ services:
       - JWT_SECRET=${JWT_SECRET:-dev-jwt-secret-change-in-production}
       - JWT_EXPIRY=15m
       - REFRESH_TOKEN_EXPIRY=7d
+      # Email Configuration (Resend)
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - RESEND_FROM_NAME=${RESEND_FROM_NAME:-Finance Tracker}
+      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-onboarding@resend.dev}
+      - APP_BASE_URL=${APP_BASE_URL:-http://localhost:3100}
+      - EMAIL_WORKER_ENABLED=${EMAIL_WORKER_ENABLED:-true}
+      - EMAIL_WORKER_POLL_INTERVAL=${EMAIL_WORKER_POLL_INTERVAL:-5s}
+      - EMAIL_WORKER_BATCH_SIZE=${EMAIL_WORKER_BATCH_SIZE:-10}
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     volumes:
@@ -137,7 +145,7 @@ services:
       - VITE_API_URL=http://backend:8080/api/v1
       - VITE_PROXY_TARGET=http://backend:8080
     ports:
-      - "${FRONTEND_PORT:-3300}:3000"
+      - "${FRONTEND_PORT:-3100}:3000"
     volumes:
       - ${FRONTEND_PATH:-../frontend}:/app
       - /app/node_modules
