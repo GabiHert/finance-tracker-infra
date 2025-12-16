@@ -145,12 +145,12 @@ wt-up: ## Start core services with worktree isolation
 	REDIS_PORT=$$INFRA_REDIS_PORT \
 	MINIO_API_PORT=$$INFRA_MINIO_API_PORT \
 	MINIO_CONSOLE_PORT=$$INFRA_MINIO_CONSOLE_PORT \
-	COMPOSE_PROJECT_NAME=$$INFRA_CONTAINER_PREFIX \
+	CONTAINER_PREFIX=$$INFRA_CONTAINER_PREFIX \
 	docker-compose -f docker-compose.yml up -d postgres minio minio-init redis
 
 wt-down: ## Stop worktree-isolated services
 	@eval "$$($(WORKTREE_CONFIG) --export)" && \
-	COMPOSE_PROJECT_NAME=$$INFRA_CONTAINER_PREFIX \
+	CONTAINER_PREFIX=$$INFRA_CONTAINER_PREFIX \
 	docker-compose -f docker-compose.yml down
 
 wt-dev: ## Start dev services with worktree isolation
@@ -162,7 +162,7 @@ wt-dev: ## Start dev services with worktree isolation
 	BACKEND_PORT=$$INFRA_BACKEND_PORT \
 	FRONTEND_PORT=$$INFRA_FRONTEND_PORT \
 	APP_BASE_URL=http://localhost:$$INFRA_FRONTEND_PORT \
-	COMPOSE_PROJECT_NAME=$$INFRA_CONTAINER_PREFIX \
+	CONTAINER_PREFIX=$$INFRA_CONTAINER_PREFIX \
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 wt-dev-all: ## Start all dev services with worktree isolation
@@ -174,22 +174,22 @@ wt-dev-all: ## Start all dev services with worktree isolation
 	BACKEND_PORT=$$INFRA_BACKEND_PORT \
 	FRONTEND_PORT=$$INFRA_FRONTEND_PORT \
 	APP_BASE_URL=http://localhost:$$INFRA_FRONTEND_PORT \
-	COMPOSE_PROJECT_NAME=$$INFRA_CONTAINER_PREFIX \
+	CONTAINER_PREFIX=$$INFRA_CONTAINER_PREFIX \
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml --profile backend --profile frontend up -d
 
 wt-logs: ## View logs for worktree-isolated services
 	@eval "$$($(WORKTREE_CONFIG) --export)" && \
-	COMPOSE_PROJECT_NAME=$$INFRA_CONTAINER_PREFIX \
+	CONTAINER_PREFIX=$$INFRA_CONTAINER_PREFIX \
 	docker-compose -f docker-compose.yml logs -f
 
 wt-ps: ## List worktree-isolated containers
 	@eval "$$($(WORKTREE_CONFIG) --export)" && \
-	COMPOSE_PROJECT_NAME=$$INFRA_CONTAINER_PREFIX \
+	CONTAINER_PREFIX=$$INFRA_CONTAINER_PREFIX \
 	docker-compose -f docker-compose.yml ps
 
 wt-clean: ## Clean worktree-isolated services and volumes
 	@eval "$$($(WORKTREE_CONFIG) --export)" && \
-	COMPOSE_PROJECT_NAME=$$INFRA_CONTAINER_PREFIX \
+	CONTAINER_PREFIX=$$INFRA_CONTAINER_PREFIX \
 	docker-compose -f docker-compose.yml down -v --remove-orphans
 
 wt-health: ## Check health of worktree-isolated services

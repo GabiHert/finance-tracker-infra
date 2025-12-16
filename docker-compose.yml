@@ -1,12 +1,15 @@
 # Finance Tracker - Dev Docker Compose Configuration
 # Full development environment with hot reload
 # Usage: docker compose up -d
+#
+# For multi-worktree support, set CONTAINER_PREFIX environment variable:
+#   CONTAINER_PREFIX=finance-tracker-myworktree docker compose up -d
 
 services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: finance-tracker-postgres
+    container_name: ${CONTAINER_PREFIX:-finance-tracker}-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-app_user}
@@ -29,7 +32,7 @@ services:
   # MinIO Object Storage (S3-compatible)
   minio:
     image: minio/minio:latest
-    container_name: finance-tracker-minio
+    container_name: ${CONTAINER_PREFIX:-finance-tracker}-minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
@@ -51,7 +54,7 @@ services:
   # MinIO Client - Creates default bucket on startup
   minio-init:
     image: minio/mc:latest
-    container_name: finance-tracker-minio-init
+    container_name: ${CONTAINER_PREFIX:-finance-tracker}-minio-init
     depends_on:
       minio:
         condition: service_healthy
@@ -68,7 +71,7 @@ services:
   # Redis Cache (for sessions and rate limiting)
   redis:
     image: redis:7-alpine
-    container_name: finance-tracker-redis
+    container_name: ${CONTAINER_PREFIX:-finance-tracker}-redis
     restart: unless-stopped
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
     ports:
@@ -88,7 +91,7 @@ services:
     build:
       context: ${BACKEND_PATH:-../backend}
       dockerfile: ${INFRA_PATH:-../infra}/docker/Dockerfile.backend
-    container_name: finance-tracker-backend
+    container_name: ${CONTAINER_PREFIX:-finance-tracker}-backend
     restart: unless-stopped
     environment:
       - ENV=development
@@ -138,7 +141,7 @@ services:
     build:
       context: ${FRONTEND_PATH:-../frontend}
       dockerfile: ${INFRA_PATH:-../infra}/docker/Dockerfile.frontend
-    container_name: finance-tracker-frontend
+    container_name: ${CONTAINER_PREFIX:-finance-tracker}-frontend
     restart: unless-stopped
     environment:
       - NODE_ENV=development
@@ -164,14 +167,14 @@ services:
 # Named volumes for data persistence
 volumes:
   postgres_data:
-    name: finance-tracker-postgres-data
+    name: ${CONTAINER_PREFIX:-finance-tracker}-postgres-data
   minio_data:
-    name: finance-tracker-minio-data
+    name: ${CONTAINER_PREFIX:-finance-tracker}-minio-data
   redis_data:
-    name: finance-tracker-redis-data
+    name: ${CONTAINER_PREFIX:-finance-tracker}-redis-data
 
 # Internal network
 networks:
   finance-tracker-network:
-    name: finance-tracker-network
+    name: ${CONTAINER_PREFIX:-finance-tracker}-network
     driver: bridge
