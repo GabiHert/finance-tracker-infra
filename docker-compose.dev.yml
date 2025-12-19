@@ -51,6 +51,7 @@ services:
       - JWT_SECRET=dev-jwt-secret-change-in-production
       - JWT_EXPIRY=15m
       - REFRESH_TOKEN_EXPIRY=7d
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
     ports:
       - "8080:8080"
     volumes:
