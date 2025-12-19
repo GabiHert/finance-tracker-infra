@@ -19,9 +19,18 @@ NC='\033[0m' # No Color
 
 echo -e "${YELLOW}=== Starting Dev Environment ===${NC}"
 
+# Load backend .env file (contains GEMINI_API_KEY)
+BACKEND_ENV="$INFRA_DIR/../backend/.env"
+if [ -f "$BACKEND_ENV" ]; then
+    set -a
+    source "$BACKEND_ENV"
+    set +a
+    echo -e "${GREEN}Loaded backend/.env${NC}"
+fi
+
 # Check for .env file
 if [ ! -f "$INFRA_DIR/.env" ]; then
-    echo -e "${YELLOW}No .env file found. Using defaults.${NC}"
+    echo -e "${YELLOW}No infra/.env file found. Using defaults.${NC}"
     echo -e "${CYAN}To configure email (Resend), copy .env.example to .env:${NC}"
     echo "  cp .env.example .env"
     echo ""
@@ -37,6 +46,13 @@ else
     else
         echo -e "${YELLOW}Email: Using mock sender (RESEND_API_KEY not set)${NC}"
     fi
+fi
+
+# Show AI configuration status
+if [ -n "$GEMINI_API_KEY" ]; then
+    echo -e "${GREEN}AI: Gemini API configured${NC}"
+else
+    echo -e "${YELLOW}AI: Gemini not configured (set GEMINI_API_KEY in backend/.env)${NC}"
 fi
 
 # Check for --build flag
